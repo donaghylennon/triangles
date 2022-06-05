@@ -60,7 +60,10 @@ void Grid::draw() {
     if (updated) {
         memset(draw_buf, 0, size_x*size_y*4);
         for (const Point& p : this->points) {
-            draw_buf[(size_y - p.y) * size_x + p.x] = 0xFFFFFFFF;
+            int y = p.y + offset_y;
+            int x = p.x + offset_x;
+            if (y >= 0 && y < size_y && x >= 0 && x < size_x)
+                draw_buf[(size_y - 1 - y) * size_x + x] = 0xFFFFFFFF;
         }
         updated = false;
     }
@@ -88,6 +91,26 @@ void Grid::run() {
                         case SDLK_ESCAPE:
                             running = false;
                             SDL_Quit();
+                            break;
+                        case SDLK_PLUS:
+                            break;
+                        case SDLK_MINUS:
+                            break;
+                        case SDLK_w:
+                            updated = true;
+                            offset_y += 10;
+                            break;
+                        case SDLK_a:
+                            updated = true;
+                            offset_x -= 10;
+                            break;
+                        case SDLK_s:
+                            updated = true;
+                            offset_y -= 10;
+                            break;
+                        case SDLK_d:
+                            updated = true;
+                            offset_x += 10;
                             break;
                         default:
                             break;

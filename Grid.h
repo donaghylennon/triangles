@@ -41,6 +41,7 @@ public:
 
 private:
     int size_x, size_y;
+    int offset_x, offset_y;
     std::unordered_set<Point> points;
     bool updated = true;
 
