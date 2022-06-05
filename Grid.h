@@ -6,9 +6,10 @@
 #include <memory>
 #include <cmath>
 
+template<typename T>
 struct Point {
-    double x;
-    double y;
+    T x;
+    T y;
 
     friend bool operator==(const Point& lhs, const Point& rhs) {
         return lhs.x==rhs.x && lhs.y==rhs.y;
@@ -19,10 +20,10 @@ struct Point {
     }
 };
 
-template<> struct std::hash<Point> {
-    std::size_t operator()(Point const& p) const noexcept {
-        std::size_t h1 = std::hash<double>{}(p.x);
-        std::size_t h2 = std::hash<double>{}(p.y);
+template<typename T> struct std::hash<Point<T>> {
+    std::size_t operator()(Point<T> const& p) const noexcept {
+        std::size_t h1 = std::hash<T>{}(p.x);
+        std::size_t h2 = std::hash<T>{}(p.y);
         return h1 ^ (h2 << 1);
     }
 };
@@ -32,10 +33,10 @@ public:
     Grid(int size_x, int size_y);
     ~Grid();
 
-    void set_point(Point p);
-    void unset_point(Point p);
-    void draw_line(Point p1, Point p2);
-    void draw_equilateral(Point p, double length);
+    void set_point(Point<double> p);
+    void unset_point(Point<double> p);
+    void draw_line(Point<double> p1, Point<double> p2);
+    void draw_equilateral(Point<double> p, double length);
     void draw();
     void run();
 
@@ -43,7 +44,7 @@ private:
     int size_x, size_y;
     double offset_x, offset_y;
     double scale = 1;
-    std::unordered_set<Point> points;
+    std::unordered_set<Point<double>> points;
     bool updated = true;
 
     uint32_t *draw_buf;

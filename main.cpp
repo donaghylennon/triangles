@@ -12,7 +12,7 @@ int main() {
     //Point p1 = { pos_distribution(generator), pos_distribution(generator) };
     //Point p2 = { pos_distribution(generator), pos_distribution(generator) };
     //Point p3 = { pos_distribution(generator), pos_distribution(generator) };
-    Point p1 = {500, 900};
+    Point<double> p1 = {500, 900};
 
     //grid.draw_line(p1, p2);
     //grid.draw_line(p1, p3);

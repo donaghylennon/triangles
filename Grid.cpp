@@ -13,17 +13,17 @@ Grid::~Grid() {
     delete[] draw_buf;
 }
 
-void Grid::set_point(Point p) {
+void Grid::set_point(Point<double> p) {
     if (auto [iter, success] = this->points.insert(p); success)
         updated = true;
 }
 
-void Grid::unset_point(Point p) {
+void Grid::unset_point(Point<double> p) {
     if (this->points.erase(p))
         updated = true;
 }
 
-void Grid::draw_line(Point p1, Point p2) {
+void Grid::draw_line(Point<double> p1, Point<double> p2) {
     double m = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
     double c = p1.y - (m*p1.x);
 
@@ -47,9 +47,9 @@ void Grid::draw_line(Point p1, Point p2) {
     }
 }
 
-void Grid::draw_equilateral(Point p, double length) {
-    Point p2 = {p.x - length/2, p.y - length};
-    Point p3 = {p.x + length/2, p.y - length};
+void Grid::draw_equilateral(Point<double> p, double length) {
+    Point<double> p2 = {p.x - length/2, p.y - length};
+    Point<double> p3 = {p.x + length/2, p.y - length};
 
     this->draw_line(p, p2);
     this->draw_line(p, p3);
@@ -59,7 +59,7 @@ void Grid::draw_equilateral(Point p, double length) {
 void Grid::draw() {
     if (updated) {
         memset(draw_buf, 0, size_x*size_y*4);
-        for (const Point& p : this->points) {
+        for (const Point<double>& p : this->points) {
             double centre_x, centre_y;
             screen_to_world(size_x/2, size_y/2, centre_x, centre_y);
 
