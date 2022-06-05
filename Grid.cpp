@@ -70,3 +70,32 @@ void Grid::draw() {
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
 }
+
+void Grid::run() {
+    bool running = true;
+    while (running) {
+        this->draw();
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_QUIT:
+                    running = false;
+                    SDL_Quit();
+                    break;
+                case SDL_KEYDOWN:
+                    switch(event.key.keysym.sym) {
+                        case SDLK_ESCAPE:
+                            running = false;
+                            SDL_Quit();
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}

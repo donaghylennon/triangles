@@ -37,6 +37,7 @@ public:
     void draw_line(Point p1, Point p2);
     void draw_equilateral(Point p, int length);
     void draw();
+    void run();
 
 private:
     int size_x, size_y;

@@ -21,32 +21,7 @@ int main() {
     int length = 800;
     grid.draw_equilateral(p1, length);
 
-    bool running = true;
-    while (running) {
-        grid.draw();
-
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch(event.type) {
-                case SDL_QUIT:
-                    running = false;
-                    SDL_Quit();
-                    break;
-                case SDL_KEYDOWN:
-                    switch(event.key.keysym.sym) {
-                        case SDLK_ESCAPE:
-                            running = false;
-                            SDL_Quit();
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+    grid.run();
 
     return 0;
 }
