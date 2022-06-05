@@ -58,7 +58,7 @@ void Grid::draw_equilateral(Point p, int length) {
 
 void Grid::draw() {
     if (updated) {
-        memset(draw_buf, 0, size_x*size_y);
+        memset(draw_buf, 0, size_x*size_y*4);
         for (const Point& p : this->points) {
             draw_buf[(size_y - p.y) * size_x + p.x] = 0xFFFFFFFF;
         }
