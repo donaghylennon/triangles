@@ -28,26 +28,26 @@ void Grid::draw_line(Point p1, Point p2) {
     double c = p1.y - (m*p1.x);
 
     if (m <= 1 && m >= -1) {
-        int high_x = p1.x > p2.x ? p1.x : p2.x;
-        int low_x = p1.x > p2.x ? p2.x : p1.x;
+        double high_x = p1.x > p2.x ? p1.x : p2.x;
+        double low_x = p1.x > p2.x ? p2.x : p1.x;
 
-        for (int x = low_x; x < high_x+1; x++) {
-            int y = static_cast<int>(std::round(m*x + c));
+        for (double x = low_x; x < high_x+1; x++) {
+            double y = m*x + c;
             this->set_point({x,y});
         }
     } else {
         double inv_m = (p1.x - p2.x) / (double)(p1.y - p2.y);
-        int high_y = p1.y > p2.y ? p1.y : p2.y;
-        int low_y = p1.y > p2.y ? p2.y : p1.y;
+        double high_y = p1.y > p2.y ? p1.y : p2.y;
+        double low_y = p1.y > p2.y ? p2.y : p1.y;
 
-        for (int y = low_y; y < high_y+1; y++) {
-            int x = static_cast<int>(std::round((y - c) * inv_m));
+        for (double y = low_y; y < high_y+1; y++) {
+            double x = (y - c) * inv_m;
             this->set_point({x,y});
         }
     }
 }
 
-void Grid::draw_equilateral(Point p, int length) {
+void Grid::draw_equilateral(Point p, double length) {
     Point p2 = {p.x - length/2, p.y - length};
     Point p3 = {p.x + length/2, p.y - length};
 
@@ -60,11 +60,17 @@ void Grid::draw() {
     if (updated) {
         memset(draw_buf, 0, size_x*size_y*4);
         for (const Point& p : this->points) {
-            int y = p.y + offset_y;
-            int x = p.x + offset_x;
+            double centre_x, centre_y;
+            screen_to_world(size_x/2, size_y/2, centre_x, centre_y);
+
+            double recentre_x = centre_x+offset_x - scale*(centre_x+offset_x);
+            double recentre_y = centre_y+offset_y - scale*(centre_y+offset_y);
+            int y = (int) (scale*(p.y + offset_y + recentre_y));
+            int x = (int) (scale*(p.x + offset_x + recentre_x));
             if (y >= 0 && y < size_y && x >= 0 && x < size_x)
                 draw_buf[(size_y - 1 - y) * size_x + x] = 0xFFFFFFFF;
         }
+        draw_buf[size_y/2*size_x + size_x/2] = 0xFFFFFFFF;
         updated = false;
     }
 
@@ -92,9 +98,13 @@ void Grid::run() {
                             running = false;
                             SDL_Quit();
                             break;
-                        case SDLK_PLUS:
+                        case SDLK_EQUALS:
+                            updated = true;
+                            scale *= 1.1;
                             break;
                         case SDLK_MINUS:
+                            updated = true;
+                            scale *= 0.9;
                             break;
                         case SDLK_w:
                             updated = true;
@@ -121,4 +131,14 @@ void Grid::run() {
             }
         }
     }
+}
+
+void Grid::world_to_screen(double x, double y, int& sx, int& sy) {
+    sx = (int) scale*(x + offset_x);
+    sy = (int) scale*(y + offset_y);
+}
+
+void Grid::screen_to_world(int x, int y, double& wx, double& wy) {
+    wx = (double) (x)/scale - offset_x;
+    wy = (double) (y)/scale - offset_y;
 }

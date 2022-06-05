@@ -7,8 +7,8 @@
 #include <cmath>
 
 struct Point {
-    int x;
-    int y;
+    double x;
+    double y;
 
     friend bool operator==(const Point& lhs, const Point& rhs) {
         return lhs.x==rhs.x && lhs.y==rhs.y;
@@ -21,8 +21,8 @@ struct Point {
 
 template<> struct std::hash<Point> {
     std::size_t operator()(Point const& p) const noexcept {
-        std::size_t h1 = std::hash<int>{}(p.x);
-        std::size_t h2 = std::hash<int>{}(p.y);
+        std::size_t h1 = std::hash<double>{}(p.x);
+        std::size_t h2 = std::hash<double>{}(p.y);
         return h1 ^ (h2 << 1);
     }
 };
@@ -35,13 +35,14 @@ public:
     void set_point(Point p);
     void unset_point(Point p);
     void draw_line(Point p1, Point p2);
-    void draw_equilateral(Point p, int length);
+    void draw_equilateral(Point p, double length);
     void draw();
     void run();
 
 private:
     int size_x, size_y;
-    int offset_x, offset_y;
+    double offset_x, offset_y;
+    double scale = 1;
     std::unordered_set<Point> points;
     bool updated = true;
 
@@ -49,4 +50,7 @@ private:
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
+
+    void world_to_screen(double x, double y, int& sx, int& sy);
+    void screen_to_world(int x, int y, double& wx, double& wy);
 };
