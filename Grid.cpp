@@ -23,52 +23,51 @@ void Grid::unset_point(Point<double> p) {
         updated = true;
 }
 
-void Grid::draw_line(Point<double> p1, Point<double> p2) {
+void Grid::add_line(Point<double> p1, Point<double> p2) {
+    this->lines.insert({p1, p2});
+}
+
+void Grid::add_equilateral(Point<double> p, double length) {
+    Point<double> p2 = {p.x - length/2, p.y - length};
+    Point<double> p3 = {p.x + length/2, p.y - length};
+
+    this->add_line(p, p2);
+    this->add_line(p, p3);
+    this->add_line(p2, p3);
+}
+
+void Grid::draw_line(Point<int> p1, Point<int> p2) {
     double m = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
     double c = p1.y - (m*p1.x);
 
     if (m <= 1 && m >= -1) {
-        double high_x = p1.x > p2.x ? p1.x : p2.x;
-        double low_x = p1.x > p2.x ? p2.x : p1.x;
+        int high_x = p1.x > p2.x ? p1.x : p2.x;
+        int low_x = p1.x > p2.x ? p2.x : p1.x;
 
-        for (double x = low_x; x < high_x+1; x++) {
-            double y = m*x + c;
-            this->set_point({x,y});
+        for (int x = low_x; x < high_x+1; x++) {
+            int y = (int) (m*x + c);
+            set_pixel({x, y});
         }
     } else {
         double inv_m = (p1.x - p2.x) / (double)(p1.y - p2.y);
-        double high_y = p1.y > p2.y ? p1.y : p2.y;
-        double low_y = p1.y > p2.y ? p2.y : p1.y;
+        int high_y = p1.y > p2.y ? p1.y : p2.y;
+        int low_y = p1.y > p2.y ? p2.y : p1.y;
 
-        for (double y = low_y; y < high_y+1; y++) {
-            double x = (y - c) * inv_m;
-            this->set_point({x,y});
+        for (int y = low_y; y < high_y+1; y++) {
+            int x = (int) ((y - c) * inv_m);
+            set_pixel({x, y});
         }
     }
-}
-
-void Grid::draw_equilateral(Point<double> p, double length) {
-    Point<double> p2 = {p.x - length/2, p.y - length};
-    Point<double> p3 = {p.x + length/2, p.y - length};
-
-    this->draw_line(p, p2);
-    this->draw_line(p, p3);
-    this->draw_line(p2, p3);
 }
 
 void Grid::draw() {
     if (updated) {
         memset(draw_buf, 0, size_x*size_y*4);
+        for (auto& l : this->lines) {
+            this->draw_line(world_to_screen(l.first), world_to_screen(l.second));
+        }
         for (const Point<double>& p : this->points) {
-            double centre_x, centre_y;
-            screen_to_world(size_x/2, size_y/2, centre_x, centre_y);
-
-            double recentre_x = centre_x+offset_x - scale*(centre_x+offset_x);
-            double recentre_y = centre_y+offset_y - scale*(centre_y+offset_y);
-            int y = (int) (scale*(p.y + offset_y + recentre_y));
-            int x = (int) (scale*(p.x + offset_x + recentre_x));
-            if (y >= 0 && y < size_y && x >= 0 && x < size_x)
-                draw_buf[(size_y - 1 - y) * size_x + x] = 0xFFFFFFFF;
+            set_pixel(world_to_screen(p));
         }
         draw_buf[size_y/2*size_x + size_x/2] = 0xFFFFFFFF;
         updated = false;
@@ -141,4 +140,20 @@ void Grid::world_to_screen(double x, double y, int& sx, int& sy) {
 void Grid::screen_to_world(int x, int y, double& wx, double& wy) {
     wx = (double) (x)/scale - offset_x;
     wy = (double) (y)/scale - offset_y;
+}
+
+Point<int> Grid::world_to_screen(Point<double> p) {
+    double centre_x, centre_y;
+    screen_to_world(size_x/2, size_y/2, centre_x, centre_y);
+
+    double recentre_x = centre_x+offset_x - scale*(centre_x+offset_x);
+    double recentre_y = centre_y+offset_y - scale*(centre_y+offset_y);
+    int y = (int) (scale*(p.y + offset_y + recentre_y));
+    int x = (int) (scale*(p.x + offset_x + recentre_x));
+    return {x, y};
+}
+
+void Grid::set_pixel(Point<int> p) {
+    if (p.y >= 0 && p.y < size_y && p.x >= 0 && p.x < size_x)
+        draw_buf[(size_y - 1 - p.y) * size_x + p.x] = 0xFFFFFFFF;
 }

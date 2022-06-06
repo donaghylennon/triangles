@@ -19,7 +19,7 @@ int main() {
     //grid.draw_line(p2, p3);
 
     int length = 800;
-    grid.draw_equilateral(p1, length);
+    grid.add_equilateral(p1, length);
 
     grid.run();
 
