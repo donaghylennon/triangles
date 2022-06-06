@@ -80,8 +80,18 @@ void Grid::draw() {
 }
 
 void Grid::run() {
+    using frame_period = std::chrono::duration<long long, std::ratio<1, 60>>;
+
     bool running = true;
+    auto prev = std::chrono::high_resolution_clock::now();
+    auto current = prev;
+    auto difference = current - prev;
+
     while (running) {
+        while (difference < frame_period{1}) {
+            current = std::chrono::high_resolution_clock::now();
+            difference = current - prev;
+        }
         this->draw();
 
         SDL_Event event;
@@ -129,6 +139,8 @@ void Grid::run() {
                     break;
             }
         }
+        prev = std::chrono::time_point_cast<
+            std::chrono::high_resolution_clock::duration>(prev + frame_period{1});
     }
 }
 
