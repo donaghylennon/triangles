@@ -11,6 +11,9 @@ Grid::Grid(int size_x, int size_y) :
 
 Grid::~Grid() {
     delete[] draw_buf;
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 }
 
 void Grid::set_point(Point<double> p) {
