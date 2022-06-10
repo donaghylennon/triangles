@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <vector>
 #include <unordered_set>
 #include <memory>
 #include <cmath>
@@ -47,6 +48,7 @@ public:
     void unset_point(Point<double> p);
     void add_line(Point<double> p1, Point<double> p2);
     void add_equilateral(Point<double> p, double length);
+    void create_sierpinski(Point<double> top, double length, int depth);
     void draw_line(Point<int> p1, Point<int> p2);
     void draw();
     void run();

@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include <vector>
 
 Grid::Grid(int size_x, int size_y) :
     size_x{size_x}, size_y{size_y},
@@ -37,6 +38,28 @@ void Grid::add_equilateral(Point<double> p, double length) {
     this->add_line(p, p2);
     this->add_line(p, p3);
     this->add_line(p2, p3);
+}
+
+void Grid::create_sierpinski(Point<double> point, double length, int depth) {
+    std::vector<Point<double>> triangles{point};
+
+    for (int i = 0; i < depth; i++) {
+        std::vector<Point<double>> new_triangles{};
+        for (auto& p : triangles) {
+            this->add_equilateral(p, length);
+            this->add_equilateral(p, length/2);
+
+            Point<double> p2 = {p.x - length/4, p.y - length/2};
+            Point<double> p3 = {p.x + length/4, p.y - length/2};
+            this->add_equilateral(p2, length/2);
+            this->add_equilateral(p3, length/2);
+            new_triangles.push_back(p2);
+            new_triangles.push_back(p3);
+        }
+        triangles.reserve(triangles.size() + new_triangles.size());
+        triangles.insert(triangles.end(), new_triangles.begin(), new_triangles.end());
+        length /= 2;
+    }
 }
 
 void Grid::draw_line(Point<int> p1, Point<int> p2) {
