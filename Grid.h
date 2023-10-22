@@ -9,35 +9,8 @@
 #include <utility>
 #include <chrono>
 
-template<typename T>
-struct Point {
-    T x;
-    T y;
-
-    friend bool operator==(const Point& lhs, const Point& rhs) {
-        return lhs.x==rhs.x && lhs.y==rhs.y;
-    }
-
-    friend std::ostream& operator<<(std::ostream& s, Point p) {
-        return s << "Point {x: " << p.x << " y: " << p.y << "}";
-    }
-};
-
-template<typename T> struct std::hash<Point<T>> {
-    std::size_t operator()(Point<T> const& p) const noexcept {
-        std::size_t h1 = std::hash<T>{}(p.x);
-        std::size_t h2 = std::hash<T>{}(p.y);
-        return h1 ^ (h2 << 1);
-    }
-};
-
-template<typename T> struct std::hash<std::pair<Point<T>, Point<T>>> {
-    std::size_t operator()(std::pair<Point<T>, Point<T>> const& p) const noexcept {
-        std::size_t h1 = std::hash<Point<T>>{}(p.first);
-        std::size_t h2 = std::hash<Point<T>>{}(p.second);
-        return h1 ^ (h2 << 1);
-    }
-};
+#include "Point.h"
+#include "Sierpinski.h"
 
 class Grid {
 public:
@@ -48,8 +21,10 @@ public:
     void unset_point(Point<double> p);
     void add_line(Point<double> p1, Point<double> p2);
     void add_equilateral(Point<double> p, double length);
+    void add_sierpinski(Sierpinski s);
     void create_sierpinski(Point<double> top, double length, int depth);
     void draw_line(Point<int> p1, Point<int> p2);
+    void draw_sierpinski(Sierpinski t);
     void draw();
     void run();
 
@@ -59,6 +34,7 @@ private:
     double scale = 1;
     std::unordered_set<Point<double>> points;
     std::unordered_set<std::pair<Point<double>, Point<double>>> lines;
+    std::vector<Sierpinski> sierpinski_triangles;
     bool updated = true;
 
     uint32_t *draw_buf;

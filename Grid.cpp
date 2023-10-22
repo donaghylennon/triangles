@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include <vector>
 #include <cmath>
+#include <queue>
 
 Grid::Grid(int size_x, int size_y) :
     size_x{size_x}, size_y{size_y},
@@ -39,6 +40,10 @@ void Grid::add_equilateral(Point<double> p, double length) {
     this->add_line(p, p2);
     this->add_line(p, p3);
     this->add_line(p2, p3);
+}
+
+void Grid::add_sierpinski(Sierpinski s) {
+    this->sierpinski_triangles.push_back(s);
 }
 
 void Grid::create_sierpinski(Point<double> point, double length, int depth) {
@@ -87,6 +92,22 @@ void Grid::draw_line(Point<int> p1, Point<int> p2) {
     }
 }
 
+void Grid::draw_sierpinski(Sierpinski t) {
+    std::queue<Sierpinski*> draw_queue;
+    draw_queue.push(&t);
+    while (!draw_queue.empty()) {
+        Sierpinski *next = draw_queue.front();
+        draw_queue.pop();
+        Point<double> *points = next->get_points();
+        draw_line(world_to_screen(points[0]), world_to_screen(points[1]));
+        draw_line(world_to_screen(points[0]), world_to_screen(points[2]));
+        draw_line(world_to_screen(points[1]), world_to_screen(points[2]));
+
+        for (Sierpinski& child : next->get_children())
+            draw_queue.push(&child);
+    }
+}
+
 void Grid::draw() {
     if (updated) {
         memset(draw_buf, 0, size_x*size_y*4);
@@ -96,6 +117,8 @@ void Grid::draw() {
         for (const Point<double>& p : this->points) {
             set_pixel(world_to_screen(p));
         }
+        for (Sierpinski s : this->sierpinski_triangles)
+            draw_sierpinski(s);
         draw_buf[size_y/2*size_x + size_x/2] = 0xFFFFFFFF;
         updated = false;
     }
