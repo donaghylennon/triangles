@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include <vector>
+#include <cmath>
 
 Grid::Grid(int size_x, int size_y) :
     size_x{size_x}, size_y{size_y},
@@ -32,8 +33,8 @@ void Grid::add_line(Point<double> p1, Point<double> p2) {
 }
 
 void Grid::add_equilateral(Point<double> p, double length) {
-    Point<double> p2 = {p.x - length/2, p.y - length};
-    Point<double> p3 = {p.x + length/2, p.y - length};
+    Point<double> p2 = {p.x - length/2, p.y - (sin(M_PI/3)*length)};
+    Point<double> p3 = {p.x + length/2, p.y - (sin(M_PI/3)*length)};
 
     this->add_line(p, p2);
     this->add_line(p, p3);
@@ -49,8 +50,8 @@ void Grid::create_sierpinski(Point<double> point, double length, int depth) {
             this->add_equilateral(p, length);
             this->add_equilateral(p, length/2);
 
-            Point<double> p2 = {p.x - length/4, p.y - length/2};
-            Point<double> p3 = {p.x + length/4, p.y - length/2};
+            Point<double> p2 = {p.x - length/4, p.y - (sin(M_PI/3)*length)/2};
+            Point<double> p3 = {p.x + length/4, p.y - (sin(M_PI/3)*length)/2};
             this->add_equilateral(p2, length/2);
             this->add_equilateral(p3, length/2);
             new_triangles.push_back(p2);
